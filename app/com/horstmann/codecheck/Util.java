@@ -554,36 +554,34 @@ public class Util {
     private static String consonants = "bcdfghjklmnpqrstvwxz";
 
     public static String createPronouncableUID() {
-        String UID = "";
-        do{
         StringBuilder result = new StringBuilder();
-        int len = 16;
-        int b = Util.generator.nextInt(2);
-        for (int i = 0; i < len; i++) {
-            String s = i % 2 == b ? Util.consonants : vowels;
-            int n = Util.generator.nextInt(s.length());
-            result.append(s.charAt(n));
-            if (i % 4 == 3 && i < len - 1) {
-                result.append('-');
-                b = Util.generator.nextInt(2);
+        int len = 4;
+        for(int i = 0; i < len; i++){
+            result.append(generateNewWord());
+            if(i != 3){ // we only want three dashes in the UID
+                result.append("-");
             }
         }
-        UID = result.toString();
-    } while(checkUIDForBadWords(UID)); // loop will run again if the UID contains any bad words in it
-        return UID;
+        return result.toString();
     }
-    private static boolean checkUIDForBadWords(String s){
-        //This function returns true if any bad word is present in the generated UID passed in as a parameter
-        String [] filteredOutWords = {"anal", "anus", "anil", "anes", "anis", "babe", "bozo", "coky", "dick", "dike", "dyke", "homo", "lube", "nude", "oral", "rape", "sexy", "titi", "wily"};
-        String[] isolateIDWords = s.split("-");
-        for(String word : isolateIDWords){
-            //if the current word is in the array of bad words, then bad word is present in ID
-            boolean badWordPresent = Arrays.asList(filteredOutWords).contains(word);
-            if(badWordPresent){
-                return true;
+    private static StringBuilder generateNewWord(){ // this function generates a four-letter word for the UID
+        StringBuilder word;
+        int len = 4;
+        int b = Util.generator.nextInt(2);
+        do{
+            word = new StringBuilder();
+            for(int i = 0; i < len; i++) { // this loop generates a four-letter word for the id
+                String s = i % 2 == b ? Util.consonants : vowels;
+                int n = Util.generator.nextInt(s.length());
+                word.append(s.charAt(n));
             }
-        }
-        return false;
+        } while(isBadWord(word.toString())); // generate a word until we get a non bad word
+        
+        return word;
+    }
+    private static boolean isBadWord(String word){ 
+        String[] filteredOutWords = {"anal", "anus", "anil", "anes", "anis", "babe", "bozo", "coky", "dick", "dike", "dyke", "homo", "lube", "nude", "oral", "rape", "sexy", "titi", "wily"};
+        return Arrays.asList(filteredOutWords).contains(word);
     }
 
     public static boolean isPronouncableUID(String s) {
